@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type InputProps = HTMLAttributes<'input'>;
+
+type Props = InputProps & {
+  label?: string;
+};
+
+const { class: className, label, ...props } = Astro.props;
+---
+
+<label
+  class="flex gap-4 flex-wrap text-teal-200 items-center text-xl autofill:bg-blue-50"
+>
+  {label}
+  <input
+    class:list={[
+      'bg-teal-700 p-2 rounded-lg border-2 border-teal-600 text-teal-50 outline-none text-base text-teal-50 focus:border-teal-200',
+      className,
+    ]}
+    {...props}
+  />
+</label>
+<style>
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #1b1b1b inset !important;
+    -webkit-text-fill-color: white !important;
+  }
+</style>

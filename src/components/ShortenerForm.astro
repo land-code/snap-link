@@ -1,0 +1,65 @@
+---
+import { db, Links, like } from 'astro:db';
+import { z } from 'zod';
+import Input from '@/components/ui/Input.astro';
+import Typography from '@/components/ui/Typography.astro';
+import Action from '@/components/ui/Action.astro';
+
+const linkSchema = z.object({
+  link: z.string().url(),
+  password: z.string().optional(),
+  alias: z.string().optional(),
+});
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const data = Object.fromEntries(formData);
+  const linkData = linkSchema.safeParse(data);
+  if (!linkData.success) {
+    return new Response('Invalid data', { status: 400 });
+  }
+  const { link, alias, password } = linkData.data;
+  await db.insert(Links).values({ title: alias, url: link });
+}
+---
+
+<form id="snap-link-form" class="flex flex-col gap-4" method="post">
+  <Typography as="h1" />
+  <Input
+    label="Link"
+    class="flex-1"
+    type="url"
+    name="link"
+    required
+    placeholder="https://example.com"
+  />
+  <Input
+    label="Password (optional)"
+    class="flex-1"
+    type="password"
+    name="password"
+  />
+  <Input
+    label="Alias (optional)"
+    class="flex-1"
+    type="text"
+    name="alias"
+    placeholder="custom-alias"
+  />
+  <Action as="button" type="submit">Snap link</Action>
+</form>
+<script>
+  import confetti from 'canvas-confetti';
+
+  const form = document.getElementById('snap-link-form');
+
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    console.log(data);
+    confetti();
+  };
+  form?.addEventListener('submit', handleSubmit);
+</script>

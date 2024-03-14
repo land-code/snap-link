@@ -1,0 +1,26 @@
+---
+import type { HTMLTag, Polymorphic } from 'astro/types';
+
+const VARIANTS = {
+  heading: 'text-teal-50 text-4xl',
+  headingSecondary: 'text-teal-50 text-4xl',
+  body: 'text-teal-50 text-lg',
+  bodySecondary: 'text-teal-50 text-lg',
+} as const;
+
+const HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+
+type Props<Tag extends HTMLTag> = Polymorphic<{
+  as: Tag;
+  variant?: keyof typeof VARIANTS;
+}>;
+
+const { as: Tag, class: className, variant, ...props } = Astro.props;
+
+const variantName = variant || HEADINGS.includes(Tag) ? 'heading' : 'body';
+const variantClass = VARIANTS[variantName];
+---
+
+<Tag class:list={[variantClass, className]} {...props}>
+  <slot />
+</Tag>
