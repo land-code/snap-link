@@ -19,6 +19,7 @@ if (Astro.request.method === 'POST') {
     return new Response('Invalid data', { status: 400 });
   }
   const { link, alias, password } = linkData.data;
+  if (!alias) return
   await db.insert(Links).values({ title: alias, url: link });
 }
 ---

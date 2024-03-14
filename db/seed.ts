@@ -1,6 +1,7 @@
-import { db } from 'astro:db';
+import { db, Links } from 'astro:db';
 
-// https://astro.build/db/seed
-export default async function seed() {
-	// TODO
+export default async function() {
+  await db.insert(Links).values([
+    { title: 'Example', url: 'https://example.com' }
+  ])
 }
