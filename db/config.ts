@@ -1,6 +1,6 @@
 import { column, defineDb, defineTable } from 'astro:db';
 
-const Links = defineTable({
+export const Links = defineTable({
   columns: {
     title: column.text({ unique: true, optional: true }),
     url: column.text()

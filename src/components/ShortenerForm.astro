@@ -1,5 +1,5 @@
 ---
-import { db, Links, like } from 'astro:db';
+import { db, Links } from 'astro:db';
 import { z } from 'zod';
 import Input from '@/components/ui/Input.astro';
 import Typography from '@/components/ui/Typography.astro';
@@ -19,7 +19,7 @@ if (Astro.request.method === 'POST') {
     return new Response('Invalid data', { status: 400 });
   }
   const { link, alias, password } = linkData.data;
-  if (!alias) return
+  if (!alias) return;
   await db.insert(Links).values({ title: alias, url: link });
 }
 ---
