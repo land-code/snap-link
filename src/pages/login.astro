@@ -26,7 +26,12 @@ if (Astro.request.method === 'POST') {
 
 <Layout title="Login">
   <Typography as="h1">Login</Typography>
-  <form action="/api/auth/signin" method="post" class="flex flex-col gap-4">
+  <form
+    id="login-form"
+    action="/api/auth/signin"
+    method="post"
+    class="flex flex-col gap-4"
+  >
     <Input label="Email" name="email" type="email" class="flex-1" required />
     <Input
       label="Password"
@@ -35,7 +40,8 @@ if (Astro.request.method === 'POST') {
       class="flex-1"
       required
     />
-    <Action as="button">Login</Action>
+    <Action id="login-form-submit" as="button">Login</Action>
+    <Typography as="p" id="statusMessage" class="text-red-200" />
   </form>
 </Layout>
 
@@ -46,12 +52,20 @@ if (Astro.request.method === 'POST') {
     signInWithEmailAndPassword,
   } from 'firebase/auth';
   import { app } from '../firebase/client';
+  import { FirebaseError } from 'firebase/app';
 
   const auth = getAuth(app);
   // Esto evitará que el navegador almacene los datos de sesión
   auth.setPersistence(inMemoryPersistence);
 
-  const form = document.querySelector('form') as HTMLFormElement;
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const status = document.getElementById(
+    'statusMessage'
+  ) as HTMLParagraphElement;
+  const button = document.getElementById(
+    'login-form-submit'
+  ) as HTMLButtonElement;
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
@@ -61,21 +75,37 @@ if (Astro.request.method === 'POST') {
     if (!email || !password) {
       return;
     }
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const idToken = await userCredential.user.getIdToken();
-    const response = await fetch('/api/auth/signin', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
 
-    if (response.redirected) {
-      window.location.assign(response.url);
+    button.innerHTML = 'Logging...';
+    button.disabled = true;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const idToken = await userCredential.user.getIdToken();
+      const response = await fetch('/api/auth/signin', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (response.redirected) {
+        window.location.assign(response.url);
+      }
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === 'auth/invalid-credential') {
+          status.innerHTML = 'Invalid email or password';
+        }
+        console.error(error.code)
+      }
+    } finally {
+      button.innerHTML = 'Login';
+      button.disabled = false;
     }
   });
 </script>

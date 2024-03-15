@@ -1,10 +1,48 @@
 ---
-import Action from '@/components/ui/Action.astro'
+import Action from '@/components/ui/Action.astro';
+import { app } from '@/firebase/server';
+import { getAuth } from 'firebase-admin/auth';
+
+const auth = getAuth(app);
+
+const checkAuth = async (): Promise<boolean> => {
+  if (!Astro.cookies.has('session')) {
+    return false;
+  }
+
+  const sessionCookie = Astro.cookies.get('session')?.value || '';
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  const user = await auth.getUser(decodedCookie.uid);
+
+  if (!user) {
+    return false;
+  }
+  return true;
+};
+
+const isAuthenticated = await checkAuth();
 ---
 
 <header class="absolute top-4 right-20">
   <nav class="flex gap-2 bg-zinc-800/40 rounded-xl p-2">
     <Action as="a" href="/"> Home </Action>
-    <Action as="a" href="/login"> Login </Action>
+    {
+      !isAuthenticated ? (
+        <>
+          <Action as="a" href="/login">
+            {' '}
+            Login{' '}
+          </Action>
+          <Action as="a" href="/register">
+            {' '}
+            Register{' '}
+          </Action>
+        </>
+      ) : (
+        <Action as="a" href="/api/auth/signout">
+          Logout
+        </Action>
+      )
+    }
   </nav>
 </header>

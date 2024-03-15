@@ -2,6 +2,14 @@ import { app } from "@/firebase/server";
 import type { APIRoute } from "astro";
 import { getAuth } from "firebase-admin/auth";
 
+type ServerAuthError = {
+  errorInfo: {
+    code: string
+    message: string
+  }
+  codePrefix: string
+}
+
 export const POST: APIRoute = async ({ request, redirect }) => {
   const auth = getAuth(app)
 
@@ -22,10 +30,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       password
     })
   } catch (error) {
-    return new Response(
-      'Something went wrong',
-      { status: 400 }
-    )
+    const authError = error as ServerAuthError
+    return new Response(authError.errorInfo.message, { status: 400 })
   }
 
   return redirect('/login')

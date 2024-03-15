@@ -7,7 +7,12 @@ import Typography from '@/components/ui/Typography.astro';
 
 <Layout title="Register">
   <Typography as="h1">Register</Typography>
-  <form action="/api/auth/register" method="post" class="flex flex-col gap-4">
+  <form
+    id="register-form"
+    action="/api/auth/register"
+    method="post"
+    class="flex flex-col gap-4"
+  >
     <Input label="Email" name="email" type="email" class="flex-1" required />
     <Input
       label="Password"
@@ -16,6 +21,37 @@ import Typography from '@/components/ui/Typography.astro';
       class="flex-1"
       required
     />
-    <Action as="button">Register</Action>
+    <Action id="register-form-submit" as="button">Register</Action>
+    <Typography as="p" id="statusMessage" class="hidden text-red-200" />
   </form>
 </Layout>
+
+<script>
+  const form = document.getElementById('register-form') as HTMLFormElement;
+  const status = document.getElementById(
+    'statusMessage'
+  ) as HTMLParagraphElement;
+  const button = document.getElementById(
+    'register-form-submit'
+  ) as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const target = e.target as HTMLFormElement;
+    const formData = new FormData(target);
+    button.innerHTML = 'Registering...';
+    button.disabled = true;
+
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      status.innerHTML = await response.text();
+      status.classList.remove('hidden');
+    }
+
+    button.innerHTML = 'Register';
+    button.disabled = false;
+  });
+</script>
