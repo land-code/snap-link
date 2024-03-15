@@ -1,0 +1,22 @@
+---
+import { db, Links, eq } from 'astro:db';
+
+const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
+---
+
+<table class="text-teal-200 w-full">
+  <thead class="text-teal-50">
+    <th>Link</th>
+    <th>URL</th>
+  </thead>
+  <tbody>
+    {
+      publicLinks.map((link) => (
+        <tr>
+          <td class="text-center">{link.title}</td>
+          <td class="text-center">{link.url}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
