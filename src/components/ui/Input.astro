@@ -5,9 +5,16 @@ type InputProps = HTMLAttributes<'input'>;
 
 type Props = InputProps & {
   label?: string;
+  switch?: boolean;
 };
 
-const { class: className, label, ...props } = Astro.props;
+const {
+  class: className,
+  label,
+  title,
+  switch: isToggle,
+  ...props
+} = Astro.props;
 ---
 
 <label
@@ -16,11 +23,35 @@ const { class: className, label, ...props } = Astro.props;
   {label}
   <input
     class:list={[
-      'bg-teal-700 p-2 rounded-lg border-2 border-teal-600 text-teal-50 outline-none text-base text-teal-50 focus:border-teal-200',
+      {
+        'bg-teal-700 p-2 rounded-lg border-2 border-teal-600 text-teal-50 outline-none text-base text-teal-50 focus:border-teal-200':
+          !isToggle,
+      },
+      { 'peer sr-only': isToggle },
       className,
     ]}
+    title={!isToggle ? title : ''}
     {...props}
   />
+  {
+    isToggle && (
+      <div
+        class={`
+          relative w-11 h-6 rounded-full bg-zinc-700 border-zinc-600
+
+          peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-200 peer-checked:bg-teal-600
+           
+          after:absolute after:top-[2px] after:border-teal-50-300 after:border after:h-5 after:w-5 after:transition-all after:content-[''] after:start-[2px] after:bg-white after:rounded-full
+
+          peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full 
+          peer-checked:after:border-white
+
+          [input[disabled]+&]:after:bg-zinc-500 [input[disabled]+&]:after:border-zinc-500
+        `}
+        title={isToggle ? title : ''}
+      />
+    )
+  }
 </label>
 <style>
   input:-webkit-autofill,

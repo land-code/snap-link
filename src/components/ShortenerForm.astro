@@ -2,8 +2,8 @@
 import { db, Links } from 'astro:db';
 import { z } from 'zod';
 import Input from '@/components/ui/Input.astro';
-import Typography from '@/components/ui/Typography.astro';
 import Action from '@/components/ui/Action.astro';
+import { checkAuth } from '@/lib/get-auth';
 
 const linkSchema = z.object({
   link: z.string().url(),
@@ -22,6 +22,8 @@ if (Astro.request.method === 'POST') {
   if (!alias) return;
   await db.insert(Links).values({ title: alias, url: link });
 }
+
+const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 ---
 
 <form id="snap-link-form" class="flex flex-col gap-4" method="post">
@@ -34,17 +36,23 @@ if (Astro.request.method === 'POST') {
     placeholder="https://example.com"
   />
   <Input
-    label="Password (optional)"
-    class="flex-1"
-    type="password"
-    name="password"
-  />
-  <Input
     label="Alias (optional)"
     class="flex-1"
     type="text"
     name="alias"
     placeholder="custom-alias"
+  />
+  <Input
+    id="public-link"
+    label="List in public links"
+    name="public"
+    class="flex-1"
+    type="checkbox"
+    title={isAuthenticated
+      ? ''
+      : 'You need to be logged in to make a link public'}
+    disabled={!isAuthenticated}
+    switch
   />
   <Action as="button" type="submit">Snap link</Action>
 </form>

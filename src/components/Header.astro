@@ -1,26 +1,8 @@
 ---
 import Action from '@/components/ui/Action.astro';
-import { app } from '@/firebase/server';
-import { getAuth } from 'firebase-admin/auth';
+import { checkAuth } from '@/lib/get-auth';
 
-const auth = getAuth(app);
-
-const checkAuth = async (): Promise<boolean> => {
-  if (!Astro.cookies.has('session')) {
-    return false;
-  }
-
-  const sessionCookie = Astro.cookies.get('session')?.value || '';
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-  const user = await auth.getUser(decodedCookie.uid);
-
-  if (!user) {
-    return false;
-  }
-  return true;
-};
-
-const isAuthenticated = await checkAuth();
+const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 ---
 
 <header class="absolute top-4 right-20">
