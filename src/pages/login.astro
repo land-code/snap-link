@@ -1,0 +1,35 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Input from '@/components/ui/Input.astro';
+import Action from '@/components/ui/Action.astro';
+import Typography from '@/components/ui/Typography.astro';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const data = Object.fromEntries(formData)
+  try {
+    const {email, password} = loginSchema.parse(data)
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response('Invalid data', { status: 400 })
+    }
+    return new Response('Internal server error', { status: 500 })
+  }
+}
+---
+
+<Layout title="Login">
+  <Typography as="h1">Login</Typography>
+  <form method="post" class="flex flex-col gap-4">
+    <Input label="Email" type="email" class="flex-1" required />
+    <Input label="Password" type="password" class="flex-1" required />
+    <Action as="button">Login</Action>
+  </form>
+</Layout>

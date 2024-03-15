@@ -25,12 +25,15 @@ const { title } = Astro.props;
     class="bg-gradient-to-b from-teal-900 to-80% to-zinc-900 min-h-screen flex justify-center"
   >
     <div class="max-w-[600px] w-full">
-      <header class="absolute top-6 right-20">
-        <nav>
+      <header class="absolute top-4 right-20">
+        <nav class="flex gap-2 bg-zinc-800/40 rounded-xl p-2">
+          <Action as="a" href="/"> Home </Action>
           <Action as="a" href="/login"> Login </Action>
         </nav>
       </header>
-      <slot />
+      <main class="p-4">
+        <slot />
+      </main>
     </div>
   </body>
 </html>

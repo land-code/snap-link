@@ -25,7 +25,6 @@ if (Astro.request.method === 'POST') {
 ---
 
 <form id="snap-link-form" class="flex flex-col gap-4" method="post">
-  <Typography as="h1" />
   <Input
     label="Link"
     class="flex-1"
@@ -63,8 +62,8 @@ if (Astro.request.method === 'POST') {
       body: formData,
     });
     if (response.ok) {
-      form.reset()
-      confetti()
+      form.reset();
+      confetti();
     }
   };
   form?.addEventListener('submit', handleSubmit);

@@ -20,9 +20,15 @@ dependencies:
   astro:
     specifier: ^4.5.2
     version: 4.5.2(typescript@5.4.2)
+  astro-auth:
+    specifier: ^0.0.1
+    version: 0.0.1(astro@4.5.2)
   canvas-confetti:
     specifier: ^1.9.2
     version: 1.9.2
+  cookie:
+    specifier: ^0.6.0
+    version: 0.6.0
   tailwindcss:
     specifier: ^3.4.1
     version: 3.4.1
@@ -1323,6 +1329,25 @@ packages:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
     dev: false
 
+  /astro-auth@0.0.1(astro@4.5.2):
+    resolution: {integrity: sha512-I8lE4Vl6OsaoiObpvjIRA0cuyhJNaz4q1++wG7iZ6Y9jonKS7K3LdDFncuqqvHO9gOsHwKkmlBvbZQGhr8jeiA==}
+    peerDependencies:
+      astro: ^4.0.0
+    dependencies:
+      astro: 4.5.2(typescript@5.4.2)
+      astro-integration-kit: 0.0.9(astro@4.5.2)
+    dev: false
+
+  /astro-integration-kit@0.0.9(astro@4.5.2):
+    resolution: {integrity: sha512-ke9pFCX66TUJy03K4u6xqebAo0CWewZkMyG3nFeDXRg5trT3oYPQLU2MRnvPu1Hw3q/i4L3TymkIw88T+TV2ow==}
+    peerDependencies:
+      astro: ^4.0.0
+    dependencies:
+      astro: 4.5.2(typescript@5.4.2)
+      defu: 6.1.4
+      pathe: 1.1.2
+    dev: false
+
   /astro@4.5.2(typescript@5.4.2):
     resolution: {integrity: sha512-Nq3GojlwXJ3XD047khraCWu/6aqGFfcyq7Q0blpTBSZnCz2s4Zri04PHvUkbKF7TK2UljkFuTXKP0CE4ZuJi9Q==}
     engines: {node: '>=18.14.1', npm: '>=6.14.0'}
@@ -1863,6 +1888,10 @@ packages:
   /define-lazy-prop@3.0.0:
     resolution: {integrity: sha512-N+MeXYoqr3pOgn8xfyRPREN7gHakLYjhsHhWGT3fWAiL4IkAt0iDw14QiiEm2bE30c5XX5q0FtAA3CK5f9/BUg==}
     engines: {node: '>=12'}
+    dev: false
+
+  /defu@6.1.4:
+    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
     dev: false
 
   /delayed-stream@1.0.0:
@@ -3592,6 +3621,10 @@ packages:
 
   /path-to-regexp@6.2.1:
     resolution: {integrity: sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==}
+    dev: false
+
+  /pathe@1.1.2:
+    resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
     dev: false
 
   /picocolors@1.0.0:
