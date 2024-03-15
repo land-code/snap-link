@@ -12,24 +12,70 @@ const loginSchema = z.object({
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
-  const data = Object.fromEntries(formData)
+  const data = Object.fromEntries(formData);
   try {
-    const {email, password} = loginSchema.parse(data)
-
+    const { email, password } = loginSchema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new Response('Invalid data', { status: 400 })
+      return new Response('Invalid data', { status: 400 });
     }
-    return new Response('Internal server error', { status: 500 })
+    return new Response('Internal server error', { status: 500 });
   }
 }
 ---
 
 <Layout title="Login">
   <Typography as="h1">Login</Typography>
-  <form method="post" class="flex flex-col gap-4">
-    <Input label="Email" type="email" class="flex-1" required />
-    <Input label="Password" type="password" class="flex-1" required />
+  <form action="/api/auth/signin" method="post" class="flex flex-col gap-4">
+    <Input label="Email" name="email" type="email" class="flex-1" required />
+    <Input
+      label="Password"
+      name="password"
+      type="password"
+      class="flex-1"
+      required
+    />
     <Action as="button">Login</Action>
   </form>
 </Layout>
+
+<script>
+  import {
+    getAuth,
+    inMemoryPersistence,
+    signInWithEmailAndPassword,
+  } from 'firebase/auth';
+  import { app } from '../firebase/client';
+
+  const auth = getAuth(app);
+  // Esto evitará que el navegador almacene los datos de sesión
+  auth.setPersistence(inMemoryPersistence);
+
+  const form = document.querySelector('form') as HTMLFormElement;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const email = formData.get('email')?.toString();
+    const password = formData.get('password')?.toString();
+
+    if (!email || !password) {
+      return;
+    }
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const idToken = await userCredential.user.getIdToken();
+    const response = await fetch('/api/auth/signin', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
+
+    if (response.redirected) {
+      window.location.assign(response.url);
+    }
+  });
+</script>

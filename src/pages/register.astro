@@ -1,0 +1,21 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Input from '@/components/ui/Input.astro';
+import Action from '@/components/ui/Action.astro';
+import Typography from '@/components/ui/Typography.astro';
+---
+
+<Layout title="Register">
+  <Typography as="h1">Register</Typography>
+  <form action="/api/auth/register" method="post" class="flex flex-col gap-4">
+    <Input label="Email" name="email" type="email" class="flex-1" required />
+    <Input
+      label="Password"
+      name="password"
+      type="password"
+      class="flex-1"
+      required
+    />
+    <Action as="button">Register</Action>
+  </form>
+</Layout>
