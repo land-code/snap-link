@@ -3,7 +3,8 @@ import { column, defineDb, defineTable } from 'astro:db';
 export const Links = defineTable({
   columns: {
     title: column.text({ unique: true, optional: true }),
-    url: column.text()
+    url: column.text(),
+    public: column.boolean({ default: false }),
   }
 })
 
