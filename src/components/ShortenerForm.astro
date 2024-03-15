@@ -4,23 +4,35 @@ import { z } from 'zod';
 import Input from '@/components/ui/Input.astro';
 import Action from '@/components/ui/Action.astro';
 import { checkAuth } from '@/lib/get-auth';
+import Typography from './ui/Typography.astro';
 
 const linkSchema = z.object({
   link: z.string().url(),
-  password: z.string().optional(),
+  public: z.enum(['on', 'off']).optional(),
   alias: z.string().optional(),
 });
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const data = Object.fromEntries(formData);
-  const linkData = linkSchema.safeParse(data);
-  if (!linkData.success) {
-    return new Response('Invalid data', { status: 400 });
+  try {
+    const { link, public: isPublic, alias } = linkSchema.parse(data);
+    if (!alias) return;
+    if (isPublic === 'on') {
+      const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
+      if (!isAuthenticated) {
+        return new Response('Unauthorized', { status: 401 });
+      }
+    }
+    await db
+      .insert(Links)
+      .values({ title: alias, url: link, public: isPublic === 'on' });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response('Invalid data', { status: 400 });
+    }
+    return new Response('An error ocurred', { status: 500 });
   }
-  const { link, alias, password } = linkData.data;
-  if (!alias) return;
-  await db.insert(Links).values({ title: alias, url: link });
 }
 
 const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
@@ -54,12 +66,16 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
     disabled={!isAuthenticated}
     switch
   />
+  <Typography id="snap-link-message" as="p" class="hidden text-red-200" />
   <Action as="button" type="submit">Snap link</Action>
 </form>
 <script>
   import confetti from 'canvas-confetti';
 
-  const form = document.getElementById('snap-link-form');
+  const form = document.getElementById('snap-link-form') as HTMLFormElement;
+  const message = document.getElementById(
+    'snap-link-message'
+  ) as HTMLButtonElement;
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -69,10 +85,13 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       method: form.method,
       body: formData,
     });
-    if (response.ok) {
-      form.reset();
-      confetti();
+    if (!response.ok) {
+      message.textContent = 'Invalid data';
+      message.classList.remove('hidden');
+      return;
     }
+    form.reset();
+    confetti();
   };
   form?.addEventListener('submit', handleSubmit);
 </script>
