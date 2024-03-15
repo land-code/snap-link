@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   }
 
   try {
-    auth.createUser({
+    await auth.createUser({
       email,
       password
     })
@@ -28,5 +28,5 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     )
   }
 
-  return redirect('/signin')
+  return redirect('/login')
 }
