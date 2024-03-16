@@ -44,7 +44,7 @@ export const POST: APIRoute = async ({request, cookies}) => {
     } else {
       for (const dictionary of naughtyWordsDictionaries) {
         for (const word of Array.from(dictionary)) {
-          if (alias.includes(word)) {
+          if (word.split(' ').includes(alias)) {
             throw new InvalidAliasError();
           }
         }
