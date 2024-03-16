@@ -9,7 +9,7 @@ Snap link is a simple url shortener. It uses:
 
 ## Setup
 > [!NOTE]
-> You can use `npm` if you want, but the PR should upload the `pnpm-lock.yaml` to work with our CI. 
+> You can use `npm` if you want to test something, but if you want to contribute you should use `pnpm`. This is because the `pnpm-lock.yaml` needs to be up to date to work with our CI. 
 - Install dependencies:
   ```bash
   pnpm install
