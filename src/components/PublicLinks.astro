@@ -9,12 +9,12 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
     <th>Link</th>
     <th>URL</th>
   </thead>
-  <tbody>
+  <tbody id="public-links">
     {
       publicLinks.map((link) => (
         <tr>
           <td class="text-center">{link.title}</td>
-          <td class="text-center">{link.url}</td>
+          <td class="text-center"><a class='underline' href={link.url}>{link.url}</a></td>
         </tr>
       ))
     }

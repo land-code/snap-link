@@ -1,59 +1,18 @@
 ---
-import { db, Links } from 'astro:db';
-import { z } from 'zod';
 import Input from '@/components/ui/Input.astro';
 import Action from '@/components/ui/Action.astro';
 import { checkAuth, getUser } from '@/lib/get-auth';
-import { generateUniqueAlias } from '@/lib/generate-unique-alias';
 import Typography from './ui/Typography.astro';
-import { eq } from 'astro:db';
-import { Users } from 'astro:db';
-
-const linkSchema = z.object({
-  link: z.string().url(),
-  public: z.enum(['on', 'off']).optional(),
-  alias: z.string().optional(),
-});
-
-if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  const data = Object.fromEntries(formData);
-  try {
-    const { link, public: isPublic, alias } = linkSchema.parse(data);
-    const user = await getUser({ cookies: Astro.cookies });
-    const [{userId}] = await db
-      .select()
-      .from(Links)
-      .where(eq(Users.email, user?.email ?? ''));
-    let newAlias = alias;
-    if (!alias) {
-      const links = await db.select().from(Links);
-      newAlias = generateUniqueAlias(links.map((link) => link.title));
-      console.log(newAlias);
-    }
-    if (isPublic === 'on') {
-      if (!user) {
-        return new Response('Unauthorized', { status: 401 });
-      }
-    }
-    await db.insert(Links).values({
-      title: newAlias as string,
-      url: link,
-      public: isPublic === 'on',
-      userId
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return new Response('Invalid data', { status: 400 });
-    }
-    return new Response('An error ocurred', { status: 500 });
-  }
-}
 
 const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 ---
 
-<form id="snap-link-form" class="flex flex-col gap-4" method="post">
+<form
+  id="snap-link-form"
+  class="flex flex-col gap-4"
+  method="post"
+  action="/api/link"
+>
   <Input
     label="Link"
     class="flex-1"
@@ -82,6 +41,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
     switch
   />
   <Typography id="snap-link-message" as="p" class="hidden text-red-200" />
+  <Typography id="snap-link-url" as="p" class="hidden text-teal-200" />
   <Action as="button" type="submit">Snap link</Action>
 </form>
 <script>
@@ -91,6 +51,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
   const message = document.getElementById(
     'snap-link-message'
   ) as HTMLButtonElement;
+  const url = document.getElementById('snap-link-url') as HTMLButtonElement;
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -105,6 +66,41 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       message.classList.remove('hidden');
       return;
     }
+    const { title, public: isPublic } = (await response.json()) as {
+      title: string;
+      public: boolean;
+    };
+
+    url.textContent = `Link created. You can access it at `;
+    const a = document.createElement('a');
+    a.href = `snap-link.vercel.app/l/${title}`;
+    a.textContent = `snap-link.vercel.app/l/${title}`;
+    a.style.textDecoration = 'underline';
+    url.appendChild(a);
+    url.classList.remove('hidden');
+
+    if (isPublic) {
+      const publicLinks = document.getElementById(
+        'public-links'
+      ) as HTMLTableRowElement;
+      const tr = document.createElement('tr');
+
+      const tdTitle = document.createElement('td');
+      tdTitle.textContent = title;
+      tdTitle.classList.add('text-center');
+      tr.appendChild(tdTitle);
+
+      const tdLink = document.createElement('td');
+      const a = document.createElement('a');
+      a.href = `snap-link.vercel.app/l/${title}`;
+      a.textContent = `snap-link.vercel.app/l/${title}`;
+      a.classList.add('underline');
+      tdLink.appendChild(a);
+      tr.appendChild(tdLink);
+
+      publicLinks.appendChild(tr);
+    }
+
     form.reset();
     confetti();
   };
