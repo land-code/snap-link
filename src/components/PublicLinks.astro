@@ -14,7 +14,11 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
       publicLinks.map((link) => (
         <tr>
           <td class="text-center">{link.title}</td>
-          <td class="text-center"><a class='underline' href={link.url}>{link.url}</a></td>
+          <td class="text-center">
+            <a class="underline" href={link.url}>
+              {link.url}
+            </a>
+          </td>
         </tr>
       ))
     }
