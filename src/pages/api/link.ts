@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({request, cookies}) => {
       newAlias = generateUniqueAlias(links.map((link) => link.title));
     } else {
       for (const dictionary of Object.values(naughtyWords)) {
-        for (const word of dictionary) {
+        for (const word of Array.from(dictionary)) {
           if (alias.includes(word)) {
             throw new InvalidAliasError();
           }
