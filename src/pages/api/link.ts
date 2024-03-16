@@ -3,7 +3,9 @@ import { getUser } from "@/lib/get-auth";
 import type { APIRoute } from "astro";
 import { db, Links, Users, eq } from "astro:db";
 import { z } from "zod";
-import * as naughtyWords from 'naughty-words'
+import { es, en } from 'naughty-words'
+
+const naughtyWordsDictionaries = [es, en]
 
 class InvalidAliasError extends Error {
   constructor() {
@@ -40,7 +42,7 @@ export const POST: APIRoute = async ({request, cookies}) => {
       const links = await db.select().from(Links);
       newAlias = generateUniqueAlias(links.map((link) => link.title));
     } else {
-      for (const dictionary of Object.values(naughtyWords)) {
+      for (const dictionary of naughtyWordsDictionaries) {
         for (const word of Array.from(dictionary)) {
           if (alias.includes(word)) {
             throw new InvalidAliasError();
