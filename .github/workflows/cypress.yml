@@ -9,4 +9,4 @@ jobs:
       - uses: actions/vercel-cypress@v1
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          repo: land-code/snap-link
+          repo: snap-link
