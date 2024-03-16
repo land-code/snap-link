@@ -18,3 +18,13 @@ export const checkAuth = async ({ cookies }: { cookies: AstroCookies }): Promise
   }
   return true;
 };
+
+export const getUser = async ({ cookies }: { cookies: AstroCookies }) => {
+  if (!cookies.has('session')) {
+    return null;
+  }
+  const sessionCookie = cookies.get('session')?.value || '';
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  const user = await auth.getUser(decodedCookie.uid);
+  return user;
+}
