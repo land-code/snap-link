@@ -62,7 +62,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       body: formData,
     });
     if (!response.ok) {
-      message.textContent = 'Invalid data';
+      message.textContent = await response.text();
       message.classList.remove('hidden');
       return;
     }
