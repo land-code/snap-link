@@ -3,6 +3,7 @@ import { getUser } from "@/lib/get-auth";
 import type { APIRoute } from "astro";
 import { db, Links, Users, eq } from "astro:db";
 import { z } from "zod";
+import * as naughtyWords from 'naughty-words'
 
 const linkSchema = z.object({
   link: z.string().url(),
@@ -25,6 +26,12 @@ export const POST: APIRoute = async ({request, cookies}) => {
     if (!alias) {
       const links = await db.select().from(Links);
       newAlias = generateUniqueAlias(links.map((link) => link.title));
+    } else {
+      Object.values(naughtyWords).forEach((dictionary) => {
+        if (dictionary.includes(alias)) {
+          return new Response('Invalid alias', { status: 400 });
+        }
+      })
     }
     if (!user) {
       await db.insert(Links).values({
