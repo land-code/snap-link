@@ -5,6 +5,18 @@ import { db, Links, Users, eq } from "astro:db";
 import { z } from "zod";
 import * as naughtyWords from 'naughty-words'
 
+class InvalidAliasError extends Error {
+  constructor() {
+    super('Invalid alias');
+  }
+}
+
+class UnauthorizedError extends Error {
+  constructor() {
+    super('Unauthorized');
+  }
+}
+
 const linkSchema = z.object({
   link: z.string().url(),
   public: z.enum(['on', 'off']).optional(),
@@ -13,25 +25,28 @@ const linkSchema = z.object({
 
 export const POST: APIRoute = async ({request, cookies}) => {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const data = Object.fromEntries(formData)
+  
 
   try {
     const { link, public: isPublic, alias } = linkSchema.parse(data);
     const user = await getUser({ cookies: cookies });
     if (!user && isPublic === 'on') {
-      return new Response('Unauthorized', { status: 401 });
+      throw new UnauthorizedError();
     }
-
+    console.log(alias, !!alias)
     let newAlias = alias;
     if (!alias) {
       const links = await db.select().from(Links);
       newAlias = generateUniqueAlias(links.map((link) => link.title));
     } else {
-      Object.values(naughtyWords).forEach((dictionary) => {
-        if (dictionary.includes(alias)) {
-          return new Response('Invalid alias', { status: 400 });
+      for (const dictionary of Object.values(naughtyWords)) {
+        for (const word of dictionary) {
+          if (alias.includes(word)) {
+            throw new InvalidAliasError();
+          }
         }
-      })
+      }
     }
     if (!user) {
       await db.insert(Links).values({
@@ -67,6 +82,13 @@ export const POST: APIRoute = async ({request, cookies}) => {
     if (error instanceof z.ZodError) {
       return new Response('Invalid data', { status: 400 });
     }
+    if (error instanceof InvalidAliasError) {
+      return new Response('Invalid alias', { status: 400 });
+    }
+    if (error instanceof UnauthorizedError) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    console.error(error)
     return new Response('An error ocurred', { status: 500 });
   }
 }
