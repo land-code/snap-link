@@ -19,5 +19,4 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          CYPRESS_host: ${{ github.event.deployment_status.environment_url }}
-          CYPRESS_port: 443
+          config: baseUrl=${{ github.event.deployment_status.environment_url }}
