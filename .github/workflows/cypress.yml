@@ -1,12 +1,18 @@
 name: my-action
 
-on: deployment
-
+on:
+  deployment_status:
 jobs:
-  regression:
+  run-e2es:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/vercel-cypress@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Install npm dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          repo: snap-link
+          CYPRESS_host: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_port: 443
