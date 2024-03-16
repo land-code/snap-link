@@ -4,6 +4,7 @@ import { z } from 'zod';
 import Input from '@/components/ui/Input.astro';
 import Action from '@/components/ui/Action.astro';
 import { checkAuth } from '@/lib/get-auth';
+import { generateUniqueAlias } from '@/lib/generate-unique-alias';
 import Typography from './ui/Typography.astro';
 
 const linkSchema = z.object({
@@ -17,7 +18,12 @@ if (Astro.request.method === 'POST') {
   const data = Object.fromEntries(formData);
   try {
     const { link, public: isPublic, alias } = linkSchema.parse(data);
-    if (!alias) return;
+    let newAlias = alias;
+    if (!alias) {
+      const links = await db.select().from(Links);
+      newAlias = generateUniqueAlias(links.map((link) => link.title));
+      console.log(newAlias);
+    }
     if (isPublic === 'on') {
       const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       if (!isAuthenticated) {
@@ -26,7 +32,11 @@ if (Astro.request.method === 'POST') {
     }
     await db
       .insert(Links)
-      .values({ title: alias, url: link, public: isPublic === 'on' });
+      .values({
+        title: newAlias as string,
+        url: link,
+        public: isPublic === 'on',
+      });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new Response('Invalid data', { status: 400 });
