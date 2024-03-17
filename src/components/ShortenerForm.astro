@@ -108,7 +108,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 
       const tdLink = document.createElement('td');
       const a = document.createElement('a');
-      a.href = `snap-link.vercel.app/l/${title}`;
+      a.href = `https://snap-link.vercel.app/l/${title}`;
       a.textContent = `snap-link.vercel.app/l/${title}`;
       a.classList.add('underline');
       tdLink.appendChild(a);
