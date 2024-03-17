@@ -38,6 +38,9 @@ dependencies:
   naughty-words:
     specifier: ^1.2.0
     version: 1.2.0
+  qr-code-styling:
+    specifier: 1.6.0-rc.1
+    version: 1.6.0-rc.1
   tailwindcss:
     specifier: ^3.4.1
     version: 3.4.1
@@ -5607,6 +5610,16 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
     dev: true
+
+  /qr-code-styling@1.6.0-rc.1:
+    resolution: {integrity: sha512-ModRIiW6oUnsP18QzrRYZSc/CFKFKIdj7pUs57AEVH20ajlglRpN3HukjHk0UbNMTlKGuaYl7Gt6/O5Gg2NU2Q==}
+    dependencies:
+      qrcode-generator: 1.4.4
+    dev: false
+
+  /qrcode-generator@1.4.4:
+    resolution: {integrity: sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==}
+    dev: false
 
   /qs@6.10.4:
     resolution: {integrity: sha512-OQiU+C+Ds5qiH91qh/mg0w+8nwQuLjM4F4M/PbmhDOoYehPh+Fb0bDjtR1sOvy7YKxvj28Y/M0PhP5uVX0kB+g==}

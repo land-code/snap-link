@@ -1,7 +1,7 @@
 ---
 import Input from '@/components/ui/Input.astro';
 import Action from '@/components/ui/Action.astro';
-import { checkAuth, getUser } from '@/lib/get-auth';
+import { checkAuth } from '@/lib/get-auth';
 import Typography from './ui/Typography.astro';
 
 const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
@@ -9,7 +9,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 
 <form
   id="snap-link-form"
-  class="flex flex-col gap-4"
+  class="flex flex-col gap-2"
   method="post"
   action="/api/link"
 >
@@ -42,16 +42,30 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
   />
   <Typography id="snap-link-message" as="p" class="hidden text-red-200" />
   <Typography id="snap-link-url" as="p" class="hidden text-teal-200" />
+  <div id="qr-code-container" class="hidden flex-col items-center self-center">
+    <div id="qr-code"></div>
+    <Action as="button" id="download-qr-code" aria-label="Download QR code">
+      Download QR code
+    </Action>
+  </div>
   <Action as="button" type="submit">Snap link</Action>
 </form>
 <script>
   import confetti from 'canvas-confetti';
+  import QRCodeStyling from 'qr-code-styling';
 
   const form = document.getElementById('snap-link-form') as HTMLFormElement;
   const message = document.getElementById(
     'snap-link-message'
   ) as HTMLButtonElement;
   const url = document.getElementById('snap-link-url') as HTMLButtonElement;
+  const qrCodeContainer = document.getElementById(
+    'qr-code-container'
+  ) as HTMLDivElement;
+  const qrCode = document.getElementById('qr-code') as HTMLDivElement;
+  const downloadQrCode = document.getElementById(
+    'download-qr-code'
+  ) as HTMLButtonElement;
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -62,6 +76,8 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       body: formData,
     });
     if (!response.ok) {
+      url.classList.add('hidden');
+      qrCodeContainer.style.display = 'none';
       message.textContent = await response.text();
       message.classList.remove('hidden');
       return;
@@ -101,8 +117,78 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       publicLinks.appendChild(tr);
     }
 
+    const qrcode = new QRCodeStyling({
+      width: 180, //128
+      height: 180,
+      type: 'svg',
+      data: `https://snap-link.vercel.app/l/${title}`,
+      image: '/favicon.svg',
+      dotsOptions: {
+        color: 'radial',
+        type: 'rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 90,
+          colorStops: [
+            { offset: 0, color: 'rgb(45 212 191)' },
+            { offset: 1, color: 'rgb(13 148 136)' },
+          ],
+        },
+      },
+      backgroundOptions: {
+        color: 'transparent',
+      },
+      imageOptions: {
+        crossOrigin: 'anonymous',
+        margin: 5,
+      },
+      margin: 0,
+      cornersSquareOptions: {
+        type: 'extra-rounded',
+      },
+    });
+
+    qrcode.append(qrCode);
+    qrCodeContainer.style.display = 'flex';
+
     form.reset();
     confetti();
   };
   form?.addEventListener('submit', handleSubmit);
+
+  const drawBackground = ({
+    image,
+    canvas,
+    context,
+  }: {
+    image: HTMLImageElement;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+  }) => {
+    canvas.width = image.width;
+    canvas.height = image.height;
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const downloadQRCode = () => {
+    const svg = qrCode.querySelector('svg');
+    if (!svg) return;
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const img = new Image();
+
+    img.onload = () => {
+      drawBackground({ image: img, canvas, context: ctx });
+      ctx.drawImage(img, 0, 0);
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'qr-code.png';
+      a.click();
+    };
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  };
+  downloadQrCode?.addEventListener('click', downloadQRCode);
 </script>
