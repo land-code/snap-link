@@ -7,6 +7,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://snap-link.vercel.app',
   integrations: [db(), tailwind(), sitemap()],
   output: "server",
   adapter: vercel()
