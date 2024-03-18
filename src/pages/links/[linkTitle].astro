@@ -35,34 +35,38 @@ const { url } = link;
 <script>
   import { generateQRCode } from '@/lib/generate-qr-code';
 
-  const copyLinkButton = document.getElementById(
-    'copy-link-button'
-  ) as HTMLButtonElement;
-  const link = document.getElementById('link') as HTMLAnchorElement;
-  const url = link.href;
+  document.addEventListener('astro:page-load', () => {
+    const copyLinkButton = document.getElementById(
+      'copy-link-button'
+    ) as HTMLButtonElement;
+    const link = document.getElementById('link') as HTMLAnchorElement;
+    const url = link.href;
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(url);
-    const beforeText = copyLinkButton.textContent;
-    copyLinkButton.textContent = 'Copiado!';
-    copyLinkButton.disabled = true;
-    setTimeout(() => {
-      copyLinkButton.textContent = beforeText;
-      copyLinkButton.disabled = false;
-    }, 1000);
-  };
-  copyLinkButton.addEventListener('click', copyLink);
+    const copyLink = () => {
+      navigator.clipboard.writeText(url);
+      const beforeText = copyLinkButton.textContent;
+      copyLinkButton.textContent = 'Copiado!';
+      copyLinkButton.disabled = true;
+      setTimeout(() => {
+        copyLinkButton.textContent = beforeText;
+        copyLinkButton.disabled = false;
+      }, 1000);
+    };
 
-  const generateQRCodeButton = document.getElementById(
-    'generate-qr-code'
-  ) as HTMLButtonElement;
-  const qrCodeArea = document.getElementById('qr-code-area') as HTMLDivElement;
+    const generateQRCodeButton = document.getElementById(
+      'generate-qr-code'
+    ) as HTMLButtonElement;
+    const qrCodeArea = document.getElementById(
+      'qr-code-area'
+    ) as HTMLDivElement;
 
-  const generateQR = () => {
-    const qrCode = generateQRCode({
-      linkTitle: '',
-    });
-    qrCode.append(qrCodeArea);
-  };
-  generateQRCodeButton.addEventListener('click', generateQR);
+    const generateQR = () => {
+      const qrCode = generateQRCode({
+        linkTitle: '',
+      });
+      qrCode.append(qrCodeArea);
+    };
+    copyLinkButton.addEventListener('click', copyLink);
+    generateQRCodeButton.addEventListener('click', generateQR);
+  });
 </script>
