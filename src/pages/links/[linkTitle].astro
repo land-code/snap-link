@@ -27,10 +27,14 @@ const { url } = link;
   >
     {url}
   </Typography>
-  <Action as="button"> Generate QR Code </Action>
+  <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
   <Action id="copy-link-button" as="button"> Copy link </Action>
+  <div class="mt-2" id="qr-code-area"></div>
+  <!-- <Action as="button" id="generate-qr-code"> Customize your QR Code </Action> -->
 </Layout>
 <script>
+  import { generateQRCode } from '@/lib/generate-qr-code';
+
   const copyLinkButton = document.getElementById(
     'copy-link-button'
   ) as HTMLButtonElement;
@@ -48,4 +52,17 @@ const { url } = link;
     }, 1000);
   };
   copyLinkButton.addEventListener('click', copyLink);
+
+  const generateQRCodeButton = document.getElementById(
+    'generate-qr-code'
+  ) as HTMLButtonElement;
+  const qrCodeArea = document.getElementById('qr-code-area') as HTMLDivElement;
+
+  const generateQR = () => {
+    const qrCode = generateQRCode({
+      linkTitle: '',
+    });
+    qrCode.append(qrCodeArea);
+  };
+  generateQRCodeButton.addEventListener('click', generateQR);
 </script>
