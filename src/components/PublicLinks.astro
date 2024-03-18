@@ -1,5 +1,6 @@
 ---
 import { db, Links, eq } from 'astro:db';
+import Action from './ui/Action.astro';
 
 const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
 ---
@@ -11,13 +12,20 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
   </thead>
   <tbody id="public-links">
     {
-      publicLinks.map((link) => (
+      publicLinks.map(({ title, url }) => (
         <tr>
-          <td class="text-center">{link.title}</td>
+          <td class="text-center" transition:name={`title-${title}`}>
+            {title}
+          </td>
           <td class="text-center">
-            <a class="underline" href={link.url}>
-              {link.url}
+            <a class="underline" href={url} transition:name={`link-${title}`}>
+              {url}
             </a>
+          </td>
+          <td>
+            <Action as="a" href={`/links/${title}`}>
+              Inspect
+            </Action>
           </td>
         </tr>
       ))

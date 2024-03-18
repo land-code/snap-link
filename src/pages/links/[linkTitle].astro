@@ -1,0 +1,51 @@
+---
+import Action from '@/components/ui/Action.astro';
+import Typography from '@/components/ui/Typography.astro';
+import Layout from '@/layouts/Layout.astro';
+import { eq } from 'astro:db';
+import { Links } from 'astro:db';
+import { db } from 'astro:db';
+
+const { linkTitle } = Astro.params;
+if (!linkTitle) return Astro.redirect('/');
+
+const [link] = await db.select().from(Links).where(eq(Links.title, linkTitle));
+const { url } = link;
+---
+
+<Layout title={linkTitle}>
+  <Typography as="h1" transition:name={`title-${linkTitle}`}
+    >{linkTitle}</Typography
+  >
+  <Typography
+    id="link"
+    as="a"
+    variant="h2"
+    class="block underline text-xl text-teal-300"
+    href={url}
+    transition:name={`link-${linkTitle}`}
+  >
+    {url}
+  </Typography>
+  <Action as="button"> Generate QR Code </Action>
+  <Action id="copy-link-button" as="button"> Copy link </Action>
+</Layout>
+<script>
+  const copyLinkButton = document.getElementById(
+    'copy-link-button'
+  ) as HTMLButtonElement;
+  const link = document.getElementById('link') as HTMLAnchorElement;
+  const url = link.href;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(url);
+    const beforeText = copyLinkButton.textContent;
+    copyLinkButton.textContent = 'Copiado!';
+    copyLinkButton.disabled = true;
+    setTimeout(() => {
+      copyLinkButton.textContent = beforeText;
+      copyLinkButton.disabled = false;
+    }, 1000);
+  };
+  copyLinkButton.addEventListener('click', copyLink);
+</script>
