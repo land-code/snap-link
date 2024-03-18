@@ -1,15 +1,10 @@
-
-<svg width="86" height="128" viewBox="0 0 43 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3.5" y="60.5" width="57" height="35.6667" rx="17.8333" transform="rotate(-90 3.5 60.5)" stroke="url(#paint0_linear_4_112)" stroke-width="7"/>
-<path d="M14 19V38C14 41.866 17.134 45 21 45V45C24.866 45 28 41.866 28 38V19" stroke="url(#paint1_linear_4_112)" stroke-width="7" stroke-linecap="round"/>
-<defs>
-<linearGradient id="paint0_linear_4_112" x1="32" y1="64" x2="32" y2="106.667" gradientUnits="userSpaceOnUse">
-<stop stop-color="#34D399"/>
-<stop offset="1" stop-color="#374151"/>
-</linearGradient>
-<linearGradient id="paint1_linear_4_112" x1="10.5" y1="32" x2="31.5" y2="32" gradientUnits="userSpaceOnUse">
-<stop stop-color="#34D399"/>
-<stop offset="1" stop-color="#374151"/>
-</linearGradient>
-</defs>
+<svg width="43" height="64" viewBox="0 0 43 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#a)" stroke="#34D399" stroke-width="7">
+  <rect x="3.5" y="60.5" width="57" height="35.667" rx="17.833" transform="rotate(-90 3.5 60.5)"/>
+  <path d="M14 19v19a7 7 0 0 0 7 7v0a7 7 0 0 0 7-7V19" stroke-linecap="round"/></g>
+  <defs>
+    <clipPath id="a">
+      <path fill="#fff" d="M0 0h42.67v64H0z"/>
+    </clipPath>
+  </defs>
 </svg>
