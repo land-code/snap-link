@@ -29,8 +29,13 @@ const { url } = link;
   </Typography>
   <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
   <Action id="copy-link-button" as="button"> Copy link </Action>
-  <div class="mt-2" id="qr-code-area"></div>
-  <!-- <Action as="button" id="generate-qr-code"> Customize your QR Code </Action> -->
+  <div class="mt-2" id="qr-code-area" class="hidden"></div>
+  <div id="modify-qr-code" class="hidden mt-4">
+    <Action available={false} as="button" disabled>
+      Customize your QR Code
+    </Action>
+    <Typography as="p" class="text-teal-400">Available soon</Typography>
+  </div>
 </Layout>
 <script>
   import { generateQRCode } from '@/lib/generate-qr-code';
@@ -59,14 +64,21 @@ const { url } = link;
     const qrCodeArea = document.getElementById(
       'qr-code-area'
     ) as HTMLDivElement;
+    const modifyQRCodeButton = document.getElementById(
+      'modify-qr-code'
+    ) as HTMLButtonElement;
 
     const generateQR = () => {
+      qrCodeArea.innerHTML = '';
       const qrCode = generateQRCode({
         linkTitle: '',
       });
       qrCode.append(qrCodeArea);
+      qrCodeArea.classList.remove('hidden');
+      modifyQRCodeButton.classList.remove('hidden');
     };
     copyLinkButton.addEventListener('click', copyLink);
     generateQRCodeButton.addEventListener('click', generateQR);
+    modifyQRCodeButton.addEventListener('mouseenter', () => {});
   });
 </script>
