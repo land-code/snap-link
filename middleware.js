@@ -4,8 +4,11 @@ export const config = {
   matcher: '/l/:path*'
 }
 
-export default async function middleware (request) {
+export default async function middleware (request, ...props) {
   const url = new URL(request.url)
+
+  console.log('astro', props)
+  console.log('astro', url)
 
   if (url.pathname.startsWith('/l/')) {
     const title = url.pathname.slice(3)
