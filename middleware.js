@@ -4,7 +4,7 @@ export const config = {
   matcher: '/l/:path*'
 }
 
-export default async function middleware (request: Request) {
+export default async function middleware (request) {
   const url = new URL(request.url)
 
   if (url.pathname.startsWith('/l/')) {
