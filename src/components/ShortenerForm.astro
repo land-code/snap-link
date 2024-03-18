@@ -89,7 +89,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 
     url.textContent = `Link created. You can access it at `;
     const a = document.createElement('a');
-    a.href = `snap-link.vercel.app/l/${title}`;
+    a.href = `https://snap-link.vercel.app/l/${title}`;
     a.textContent = `snap-link.vercel.app/l/${title}`;
     a.style.textDecoration = 'underline';
     url.appendChild(a);
