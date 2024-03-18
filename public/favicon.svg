@@ -1,7 +1,7 @@
-<svg width="43" height="64" viewBox="0 0 43 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g clip-path="url(#a)" stroke="#34D399" stroke-width="7">
-  <rect x="3.5" y="60.5" width="57" height="35.667" rx="17.833" transform="rotate(-90 3.5 60.5)"/>
-  <path d="M14 19v19a7 7 0 0 0 7 7v0a7 7 0 0 0 7-7V19" stroke-linecap="round"/></g>
+<svg width="43" height="64" viewBox="0 0 43 64" fill="#14b8a6" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#a)" stroke="#14b8a6" stroke-width="7">
+  <rect x="3.5" y="60.5" fill="transparent" width="57" height="35.667" rx="17.833" transform="rotate(-90 3.5 60.5)"/>
+  <path fill="transparent" d="M14 19v19a7 7 0 0 0 7 7v0a7 7 0 0 0 7-7V19" stroke-linecap="round"/></g>
   <defs>
     <clipPath id="a">
       <path fill="#fff" d="M0 0h42.67v64H0z"/>
