@@ -52,7 +52,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 </form>
 <script>
   import confetti from 'canvas-confetti';
-  import QRCodeStyling from 'qr-code-styling';
+  import { generateQRCode } from '@/lib/generate-qr-code';
 
   const form = document.getElementById('snap-link-form') as HTMLFormElement;
   const message = document.getElementById(
@@ -117,37 +117,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       publicLinks.appendChild(tr);
     }
 
-    const qrcode = new QRCodeStyling({
-      width: 180, //128
-      height: 180,
-      type: 'svg',
-      data: `https://snap-link.vercel.app/l/${title}`,
-      image: '/favicon.svg',
-      dotsOptions: {
-        color: 'radial',
-        type: 'rounded',
-        gradient: {
-          type: 'linear',
-          rotation: 90,
-          colorStops: [
-            { offset: 0, color: 'rgb(45 212 191)' },
-            { offset: 1, color: 'rgb(13 148 136)' },
-          ],
-        },
-      },
-      backgroundOptions: {
-        color: 'transparent',
-      },
-      imageOptions: {
-        crossOrigin: 'anonymous',
-        margin: 5,
-      },
-      margin: 0,
-      cornersSquareOptions: {
-        type: 'extra-rounded',
-      },
-    });
-
+    const qrcode = generateQRCode({ linkTitle: title });
     qrcode.append(qrCode);
     qrCodeContainer.style.display = 'flex';
 
