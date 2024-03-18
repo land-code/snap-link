@@ -5,8 +5,8 @@ import { checkAuth } from '@/lib/get-auth';
 const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
 ---
 
-<header class="absolute top-4 right-20">
-  <nav class="flex gap-2 bg-zinc-800/40 rounded-xl p-2">
+<header class="flex sm:absolute justify-center top-4 right-20">
+  <nav class="flex w-max gap-2 bg-zinc-800/40 rounded-xl p-2">
     <Action as="a" href="/"> Home </Action>
     {
       !isAuthenticated ? (
