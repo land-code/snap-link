@@ -58,7 +58,9 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
   const message = document.getElementById(
     'snap-link-message'
   ) as HTMLButtonElement;
-  const url = document.getElementById('snap-link-url') as HTMLButtonElement;
+  const urlButton = document.getElementById(
+    'snap-link-url'
+  ) as HTMLButtonElement;
   const qrCodeContainer = document.getElementById(
     'qr-code-container'
   ) as HTMLDivElement;
@@ -76,7 +78,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       body: formData,
     });
     if (!response.ok) {
-      url.classList.add('hidden');
+      urlButton.classList.add('hidden');
       qrCodeContainer.style.display = 'none';
       message.textContent = await response.text();
       message.classList.remove('hidden');
@@ -87,13 +89,15 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       public: boolean;
     };
 
-    url.textContent = `Link created. You can access it at `;
+    urlButton.textContent = `Link created. You can access it at `;
     const a = document.createElement('a');
-    a.href = `https://snap-link.vercel.app/l/${title}`;
-    a.textContent = `snap-link.vercel.app/l/${title}`;
+    const url = new URL(window.location.href);
+    url.pathname = `/l/${title}`;
+    a.href = url.toString();
+    a.textContent = url.toString();
     a.style.textDecoration = 'underline';
-    url.appendChild(a);
-    url.classList.remove('hidden');
+    urlButton.appendChild(a);
+    urlButton.classList.remove('hidden');
 
     if (isPublic) {
       const publicLinks = document.getElementById(
@@ -102,14 +106,14 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       const tr = document.createElement('tr');
 
       const tdTitle = document.createElement('td');
-      tdTitle.classlist.add('h-20')
+      tdTitle.classList.add('h-20');
       tdTitle.textContent = title;
       tdTitle.classList.add('text-center');
       tr.appendChild(tdTitle);
 
       const tdLink = document.createElement('td');
       const a = document.createElement('a');
-      a.href = `https://snap-link.vercel.app/l/${title}`;
+      a.href = url.toString();
       a.textContent = `snap-link.vercel.app/l/${title}`;
       a.classList.add('underline');
       tdLink.appendChild(a);
