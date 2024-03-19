@@ -102,6 +102,7 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       const tr = document.createElement('tr');
 
       const tdTitle = document.createElement('td');
+      tdTitle.classlist.add('h-20')
       tdTitle.textContent = title;
       tdTitle.classList.add('text-center');
       tr.appendChild(tdTitle);
