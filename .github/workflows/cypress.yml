@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Pull env file
         run: |
-          pnpm add -g vercel && vercel env pull --token ${{ secrets.VERCEL_TOKEN }} --prod
+          vercel env pull --token ${{ secrets.VERCEL_TOKEN }} --prod
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
