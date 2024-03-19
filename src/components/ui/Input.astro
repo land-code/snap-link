@@ -24,7 +24,7 @@ const {
   <input
     class:list={[
       {
-        'bg-teal-700 p-2 rounded-lg border-2 border-teal-600 text-teal-50 outline-none text-base text-teal-50 focus:border-teal-200':
+        'bg-teal-700 p-2 rounded-lg border-2 border-teal-600 text-teal-50 outline-none text-base text-teal-50 focus:border-teal-200 disabled:cursor-not-allowed':
           !isToggle,
       },
       { 'peer sr-only': isToggle },
@@ -47,6 +47,7 @@ const {
           peer-checked:after:border-white
 
           [input[disabled]+&]:after:bg-zinc-500 [input[disabled]+&]:after:border-zinc-500
+          [input[disabled]+&]:cursor-not-allowed
         `}
         title={isToggle ? title : ''}
       />
