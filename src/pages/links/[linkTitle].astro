@@ -29,6 +29,9 @@ const { url } = link;
   </Typography>
   <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
   <Action id="copy-link-button" as="button"> Copy link </Action>
+  <Action data-link={linkTitle} id="delete-link-button" as="button">
+    Delete link
+  </Action>
   <div class="mt-2" id="qr-code-area" class="hidden"></div>
   <div id="modify-qr-code" class="hidden mt-4">
     <Action available={false} as="button" disabled>
@@ -39,6 +42,7 @@ const { url } = link;
 </Layout>
 <script>
   import { generateQRCode } from '@/lib/generate-qr-code';
+  import { navigate } from 'astro:transitions/client';
 
   document.addEventListener('astro:page-load', () => {
     const copyLinkButton = document.getElementById(
@@ -77,8 +81,29 @@ const { url } = link;
       qrCodeArea.classList.remove('hidden');
       modifyQRCodeButton.classList.remove('hidden');
     };
+    const deleteLinkButton = document.getElementById(
+      'delete-link-button'
+    ) as HTMLAnchorElement;
+    const title = deleteLinkButton.getAttribute('data-link') as string;
+    const formData = new FormData();
+    formData.append('title', title);
+
+    const deleteLink = async () => {
+      const response = await fetch(`/api/link?title=${title}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        alert('Error while deleting link');
+        return;
+      }
+      navigate('/', {
+        history: 'replace',
+      });
+    };
+
     copyLinkButton.addEventListener('click', copyLink);
     generateQRCodeButton.addEventListener('click', generateQR);
     modifyQRCodeButton.addEventListener('mouseenter', () => {});
+    deleteLinkButton.addEventListener('click', deleteLink);
   });
 </script>

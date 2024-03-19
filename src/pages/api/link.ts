@@ -25,10 +25,10 @@ const linkSchema = z.object({
   alias: z.string().optional(),
 });
 
-export const POST: APIRoute = async ({request, cookies}) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData)
-  
+
 
   try {
     const { link, public: isPublic, alias } = linkSchema.parse(data);
@@ -93,4 +93,16 @@ export const POST: APIRoute = async ({request, cookies}) => {
     console.error(error)
     return new Response('An error ocurred', { status: 500 });
   }
+}
+
+
+export const DELETE: APIRoute = async ({ request }) => {
+  const url = new URL(request.url)
+  const title = url.searchParams.get('title')
+  if (!title || typeof title !== 'string') {
+    return new Response('Invalid data', { status: 400 })
+  }
+
+  await db.delete(Links).where(eq(Links.title, title))
+  return new Response(null, { status: 204 })
 }
