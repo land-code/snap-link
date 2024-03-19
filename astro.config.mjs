@@ -10,5 +10,7 @@ export default defineConfig({
   site: 'https://snap-link.vercel.app',
   integrations: [db(), tailwind(), sitemap()],
   output: "server",
-  adapter: vercel()
+  adapter: vercel({
+    edgeMiddleware: true
+  })
 });
