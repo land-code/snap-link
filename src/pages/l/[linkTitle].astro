@@ -1,5 +1,4 @@
 ---
-import Layout from '@/layouts/Layout.astro';
 import { eq } from 'astro:db';
 import { Links } from 'astro:db';
 import { db } from 'astro:db';
@@ -18,14 +17,6 @@ const [link] = await db
 if (link === undefined) {
   return Astro.redirect('/');
 }
-const { url } = link;
----
 
-<Layout title={`${linkTitle}`} redirect={url}>
-  <h1>{linkTitle}</h1>
-  <p>You are being redirected to {url}</p>
-  <p>
-    If you are not redirected, please
-    <a href={url}>click here</a>
-  </p>
-</Layout>
+return Astro.redirect(link.url);
+---
