@@ -5,9 +5,10 @@ import Header from '@/components/Header.astro';
 interface Props {
   title: string;
   redirect?: string;
+  isHome?: boolean;
 }
 
-const { title, redirect } = Astro.props;
+const { title, redirect, isHome = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -21,7 +22,7 @@ const { title, redirect } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <title>{title}{!isHome && ' - Snap Link'}</title>
     {redirect && <meta http-equiv="refresh" content={`0;url=${redirect}`} />}
     <ViewTransitions />
   </head>
