@@ -97,12 +97,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 
 export const DELETE: APIRoute = async ({ request }) => {
-  const formData = request.formData()
-  const title = formData.get('title')
+  const url = new URL(request.url)
+  const title = url.searchParams.get('title')
   if (!title || typeof title !== 'string') {
     return new Response('Invalid data', { status: 400 })
   }
 
   await db.delete(Links).where(eq(Links.title, title))
-  return new Response('Link deleted successfully', { status: 204 })
+  return new Response(null, { status: 204 })
 }
