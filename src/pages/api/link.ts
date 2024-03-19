@@ -25,10 +25,10 @@ const linkSchema = z.object({
   alias: z.string().optional(),
 });
 
-export const POST: APIRoute = async ({request, cookies}) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData)
-  
+
 
   try {
     const { link, public: isPublic, alias } = linkSchema.parse(data);
@@ -96,4 +96,13 @@ export const POST: APIRoute = async ({request, cookies}) => {
 }
 
 
-export const DELETE: APIRoute = ({}) => {}
+export const DELETE: APIRoute = async ({ request }) => {
+  const formData = request.formData()
+  const title = formData.get('title')
+  if (!title || typeof title !== 'string') {
+    return new Response('Invalid data', { status: 400 })
+  }
+
+  await db.delete(Links).where(eq(Links.title, title))
+  return new Response('Link deleted successfully', { status: 204 })
+}
