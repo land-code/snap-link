@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   try {
     const { link, public: isPublic, alias } = linkSchema.parse(data);
-    const user = await getUser({ cookies: cookies });
+    const user = await getUser({ cookies });
     if (!user && isPublic === 'on') {
       throw new UnauthorizedError();
     }
@@ -95,14 +95,38 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 }
 
+const linkTitleSchema = z.string();
 
-export const DELETE: APIRoute = async ({ request }) => {
-  const url = new URL(request.url)
-  const title = url.searchParams.get('title')
-  if (!title || typeof title !== 'string') {
-    return new Response('Invalid data', { status: 400 })
+
+export const DELETE: APIRoute = async ({ request, cookies }) => {
+  try {
+    const url = new URL(request.url)
+    const title = url.searchParams.get('title')
+    const parsedTitle = linkTitleSchema.parse(title)
+
+    const user = await getUser({cookies})
+    if (!user) {
+      throw new UnauthorizedError()
+    }
+
+    const [{userId}] = await db.select().from(Links).where(eq(Links.title, parsedTitle))
+    if (!userId) throw new UnauthorizedError()
+
+    const [{email}] = await db.select().from(Users).where(eq(Users.id, userId))
+    if (email !== user.email) {
+      throw new UnauthorizedError()
+    }
+
+    await db.delete(Links).where(eq(Links.title, parsedTitle))
+    return new Response(null, { status: 204 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response('Invalid data', { status: 400 });
+    }
+    if (error instanceof UnauthorizedError) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    console.error(error)
+    return new Response('An error ocurred', { status: 500 });
   }
-
-  await db.delete(Links).where(eq(Links.title, title))
-  return new Response(null, { status: 204 })
 }
