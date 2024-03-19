@@ -84,13 +84,13 @@ const { url } = link;
 
     const deleteLinkButton = document.getElementById('delete-link-button') as HTMLAnchorElement;
     const title = deleteLinkButton.getAttribute('data-link') as string
+    const formData = new FormData()
+    formData.append('title', title)
 
     const deleteLink = () => {
       fetch('/api/link', {
         method: 'DELETE',
-        body: new FormData({
-          title
-        })
+        body: formData)
       })
     }
 
