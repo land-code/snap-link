@@ -31,4 +31,4 @@ jobs:
         with:
           start: pnpm dev
           wait-on: 'pnpx wait-on --timeout 60000 http://localhost:4321'
-          config: baseUrl=localhost:4321
+          config: baseUrl=http://localhost:4321
