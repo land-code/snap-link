@@ -94,3 +94,6 @@ export const POST: APIRoute = async ({request, cookies}) => {
     return new Response('An error ocurred', { status: 500 });
   }
 }
+
+
+export const DELETE: APIRoute = ({}) => {}
