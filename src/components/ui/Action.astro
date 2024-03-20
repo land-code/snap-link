@@ -1,15 +1,31 @@
 ---
 import type { HTMLTag, Polymorphic } from 'astro/types';
 
-type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag; available?: boolean }>;
+export const ACTION_CLASSES = {
+  primary:
+    'bg-teal-600 p-2 rounded-xl border-2 border-teal-400 text-teal-50 hover:bg-teal-500 active:bg-teal-400 disabled:bg-teal-400',
+  icon: 'size-8 text-teal-100 hover:text-teal-400 active:text-teal-500 disabled:pointer-events-none disabled:text-zinc-400',
+};
 
-const { as: Tag, class: className, available = true, ...props } = Astro.props;
+type Props<Tag extends HTMLTag> = Polymorphic<{
+  as: Tag;
+  available?: boolean;
+  variant?: keyof typeof ACTION_CLASSES;
+}>;
+
+const {
+  as: Tag,
+  class: className,
+  available = true,
+  variant = 'primary',
+  ...props
+} = Astro.props;
 ---
 
 <Tag
   disabled={!available || props.disabled}
   class:list={[
-    'bg-teal-600 p-2 rounded-xl border-2 border-teal-400 text-teal-50 hover:bg-teal-500 active:bg-teal-400 disabled:bg-teal-400',
+    ACTION_CLASSES[variant as keyof typeof ACTION_CLASSES],
     {
       'cursor-not-allowed disabled:bg-zinc-400 disabled:border-zinc-400':
         !available,

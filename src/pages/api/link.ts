@@ -129,3 +129,41 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
     return new Response('An error ocurred', { status: 500 });
   }
 }
+
+const updateLinkSchema = z.object({
+  newUrl: z.string().url()
+});
+
+export const PUT: APIRoute = async ({request, cookies}) => {
+  try {
+    const url = new URL(request.url)
+    const title = url.searchParams.get('title')
+    const parsedTitle = linkTitleSchema.parse(title)
+
+    const user = await getUser({cookies})
+    if (!user) {
+      throw new UnauthorizedError()
+    }
+    const [{userId}] = await db.select().from(Links).where(eq(Links.title, parsedTitle))
+    if (!userId) throw new UnauthorizedError()
+
+    const [{email}] = await db.select().from(Users).where(eq(Users.id, userId))
+    if (email !== user.email) {
+      throw new UnauthorizedError()
+    }
+    const formData = await request.formData()
+    const data = Object.fromEntries(formData.entries())
+    const { newUrl } = updateLinkSchema.parse(data);
+    await db.update(Links).set({ url: newUrl }).where(eq(Links.title, parsedTitle))
+    return new Response(null, { status: 204 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return new Response('Invalid data', { status: 400 });
+    }
+    if (error instanceof UnauthorizedError) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    console.error(error)
+    return new Response('An error ocurred', { status: 500 });
+  }
+}

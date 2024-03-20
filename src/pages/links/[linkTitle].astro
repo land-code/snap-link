@@ -1,12 +1,13 @@
 ---
+import { db, Users, Links, eq } from 'astro:db';
 import Action from '@/components/ui/Action.astro';
+import Input from '@/components/ui/Input.astro';
 import Typography from '@/components/ui/Typography.astro';
 import Layout from '@/layouts/Layout.astro';
 import { getUser } from '@/lib/get-auth';
-import { eq } from 'astro:db';
-import { Users } from 'astro:db';
-import { Links } from 'astro:db';
-import { db } from 'astro:db';
+
+import EditIcon from '@/icons/Edit.astro';
+import CheckIcon from '@/icons/Check.astro';
 
 const { linkTitle } = Astro.params;
 if (!linkTitle) return Astro.redirect('/');
@@ -14,13 +15,13 @@ if (!linkTitle) return Astro.redirect('/');
 const [link] = await db.select().from(Links).where(eq(Links.title, linkTitle));
 const { url, userId } = link;
 
-let showDeleteButton = false;
+let isOwner = false;
 
 if (userId) {
   const user = getUser({ cookies: Astro.cookies });
   const userDb = db.select().from(Users).where(eq(Users.id, userId));
   await Promise.all([user, userDb]).then(([user, [userDb]]) => {
-    showDeleteButton = user?.email === userDb.email;
+    isOwner = user?.email === userDb.email;
   });
 }
 ---
@@ -29,19 +30,36 @@ if (userId) {
   <Typography as="h1" transition:name={`title-${linkTitle}`}
     >{linkTitle}</Typography
   >
-  <Typography
-    id="link"
-    as="a"
-    variant="h2"
-    class="block underline text-xl text-teal-300"
-    href={url}
-    transition:name={`link-${linkTitle}`}
-  >
-    {url}
-  </Typography>
+  <div class="flex gap-2 items-baseline mb-2">
+    <Typography
+      id="link"
+      as="a"
+      variant="h2"
+      class="block underline text-xl text-teal-300"
+      href={url}
+      transition:name={`link-${linkTitle}`}
+    >
+      {url}
+    </Typography>
+    <Input
+      id="link-input"
+      class="hidden text-lg w-max"
+      transition:name={`link-${linkTitle}`}
+      value={url}
+    />
+    <Action as="button" id="edit-link-button" variant="icon" hidden={!isOwner}>
+      <EditIcon id="edit-icon" />
+      <CheckIcon id="check-icon" class="hidden" />
+    </Action>
+  </div>
   <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
   <Action id="copy-link-button" as="button"> Copy link </Action>
-  <Action data-link={linkTitle} id="delete-link-button" as="button" hidden={!showDeleteButton}>
+  <Action
+    data-link={linkTitle}
+    id="delete-link-button"
+    as="button"
+    hidden={!isOwner}
+  >
     Delete link
   </Action>
   <div class="mt-2" id="qr-code-area" class="hidden"></div>
@@ -113,9 +131,43 @@ if (userId) {
       });
     };
 
+    const editLinkButton = document.getElementById(
+      'edit-link-button'
+    ) as HTMLButtonElement;
+    const linkInput = document.getElementById('link-input') as HTMLInputElement;
+
+    const checkIcon = document.getElementById(
+      'check-icon'
+    ) as HTMLButtonElement;
+    const editIcon = document.getElementById('edit-icon') as HTMLButtonElement;
+
+    const showTextbox = async () => {
+      if (link.classList.contains('hidden')) {
+        const newUrl = linkInput.value;
+        const title = deleteLinkButton.getAttribute('data-link') as string;
+
+        const url = new URL('/api/link', window.location.origin);
+        url.searchParams.append('title', title);
+        const formData = new FormData();
+        formData.append('newUrl', newUrl);
+        await fetch(url.toString(), {
+          method: 'PUT',
+          body: formData,
+        });
+
+        link.textContent = newUrl;
+        link.href = newUrl;
+      }
+
+      linkInput.classList.toggle('hidden');
+      link.classList.toggle('hidden');
+      checkIcon.classList.toggle('hidden');
+      editIcon.classList.toggle('hidden');
+    };
+
     copyLinkButton.addEventListener('click', copyLink);
     generateQRCodeButton.addEventListener('click', generateQR);
-    modifyQRCodeButton.addEventListener('mouseenter', () => {});
     deleteLinkButton.addEventListener('click', deleteLink);
+    editLinkButton.addEventListener('click', showTextbox);
   });
 </script>
