@@ -36,7 +36,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     if (!user && isPublic === 'on') {
       throw new UnauthorizedError();
     }
-    console.log(alias, !!alias)
     let newAlias = alias;
     if (!alias) {
       const links = await db.select().from(Links);
