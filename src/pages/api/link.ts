@@ -131,7 +131,7 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
 }
 
 const updateLinkSchema = z.object({
-  newUrl: z.string().url()
+  'link-input': z.string().url()
 });
 
 export const PUT: APIRoute = async ({request, cookies}) => {
@@ -153,7 +153,7 @@ export const PUT: APIRoute = async ({request, cookies}) => {
     }
     const formData = await request.formData()
     const data = Object.fromEntries(formData.entries())
-    const { newUrl } = updateLinkSchema.parse(data);
+    const { "link-input": newUrl } = updateLinkSchema.parse(data);
     await db.update(Links).set({ url: newUrl }).where(eq(Links.title, parsedTitle))
     return new Response(null, { status: 204 })
   } catch (error) {
