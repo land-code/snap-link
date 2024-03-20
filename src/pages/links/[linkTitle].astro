@@ -41,33 +41,45 @@ if (userId) {
     >
       {url}
     </Typography>
+    <Action as="button" id="edit-link-button" variant="icon" hidden={!isOwner}>
+      <EditIcon id="edit-icon" />
+    </Action>
+  </div>
+  <form id="link-edit-form" class="hidden gap-2 items-baseline mb-2">
     <Input
-      id="link-input"
-      class="hidden text-lg w-max"
+      name="link-input"
+      class="text-lg w-max"
       transition:name={`link-${linkTitle}`}
       value={url}
     />
-    <Action as="button" id="edit-link-button" variant="icon" hidden={!isOwner}>
-      <EditIcon id="edit-icon" />
-      <CheckIcon id="check-icon" class="hidden" />
+    <Action
+      as="button"
+      type="submit"
+      id="submit-link-button"
+      variant="icon"
+      hidden={!isOwner}
+    >
+      <CheckIcon id="check-icon" />
     </Action>
-  </div>
-  <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
-  <Action id="copy-link-button" as="button"> Copy link </Action>
-  <Action
-    data-link={linkTitle}
-    id="delete-link-button"
-    as="button"
-    hidden={!isOwner}
-  >
-    Delete link
-  </Action>
-  <div class="mt-2" id="qr-code-area" class="hidden"></div>
-  <div id="modify-qr-code" class="hidden mt-4">
-    <Action available={false} as="button" disabled>
-      Customize your QR Code
+  </form>
+  <div class="flex gap-2 items-center">
+    <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
+    <Action id="copy-link-button" as="button"> Copy link </Action>
+    <Action
+      data-link={linkTitle}
+      id="delete-link-button"
+      as="button"
+      hidden={!isOwner}
+    >
+      Delete link
     </Action>
-    <Typography as="p" class="text-teal-400">Available soon</Typography>
+    <div class="mt-2" id="qr-code-area" class="hidden"></div>
+    <div id="modify-qr-code" class="hidden mt-4">
+      <Action available={false} as="button" disabled>
+        Customize your QR Code
+      </Action>
+      <Typography as="p" class="text-teal-400">Available soon</Typography>
+    </div>
   </div>
 </Layout>
 <script>
@@ -131,43 +143,68 @@ if (userId) {
       });
     };
 
+    const editLinkForm = document.getElementById(
+      'link-edit-form'
+    ) as HTMLFormElement;
     const editLinkButton = document.getElementById(
       'edit-link-button'
     ) as HTMLButtonElement;
-    const linkInput = document.getElementById('link-input') as HTMLInputElement;
-
-    const checkIcon = document.getElementById(
-      'check-icon'
+    const submitLinkButton = document.getElementById(
+      'submit-link-button'
     ) as HTMLButtonElement;
     const editIcon = document.getElementById('edit-icon') as HTMLButtonElement;
 
     const showTextbox = async () => {
-      if (link.classList.contains('hidden')) {
-        const newUrl = linkInput.value;
-        const title = deleteLinkButton.getAttribute('data-link') as string;
+      editLinkForm.classList.remove('hidden');
+      link.classList.add('hidden');
+      editIcon.classList.add('hidden');
+      editLinkForm.style.display = 'flex';
+    };
 
-        const url = new URL('/api/link', window.location.origin);
-        url.searchParams.append('title', title);
-        const formData = new FormData();
-        formData.append('newUrl', newUrl);
-        await fetch(url.toString(), {
-          method: 'PUT',
-          body: formData,
-        });
+    const submitForm = async (e: SubmitEvent) => {
+      e.preventDefault();
 
-        link.textContent = newUrl;
-        link.href = newUrl;
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const newUrl = formData.get('link-input') as string;
+      const actualUrl = link.textContent;
+
+      if (!newUrl) return;
+      if (newUrl === actualUrl) {
+        editLinkForm.classList.add('hidden');
+        link.classList.remove('hidden');
+        editIcon.classList.remove('hidden');
+        return;
       }
 
-      linkInput.classList.toggle('hidden');
-      link.classList.toggle('hidden');
-      checkIcon.classList.toggle('hidden');
-      editIcon.classList.toggle('hidden');
+      submitLinkButton.disabled = true;
+      const title = deleteLinkButton.getAttribute('data-link') as string;
+
+      const url = new URL('/api/link', window.location.origin);
+      url.searchParams.append('title', title);
+      const response = await fetch(url.toString(), {
+        method: 'PUT',
+        body: formData,
+      });
+
+      submitLinkButton.disabled = false;
+
+      if (!response.ok) {
+        alert(response.text());
+        return;
+      }
+
+      link.textContent = newUrl;
+      link.href = newUrl;
+      editLinkForm.style.display = 'none';
+      link.classList.remove('hidden');
+      editIcon.classList.remove('hidden');
     };
 
     copyLinkButton.addEventListener('click', copyLink);
     generateQRCodeButton.addEventListener('click', generateQR);
     deleteLinkButton.addEventListener('click', deleteLink);
     editLinkButton.addEventListener('click', showTextbox);
+    editLinkForm.addEventListener('submit', submitForm);
   });
 </script>
