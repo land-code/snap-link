@@ -2,7 +2,9 @@
 import Action from '@/components/ui/Action.astro';
 import Typography from '@/components/ui/Typography.astro';
 import Layout from '@/layouts/Layout.astro';
+import { getUser } from '@/lib/get-auth';
 import { eq } from 'astro:db';
+import { Users } from 'astro:db';
 import { Links } from 'astro:db';
 import { db } from 'astro:db';
 
@@ -10,7 +12,17 @@ const { linkTitle } = Astro.params;
 if (!linkTitle) return Astro.redirect('/');
 
 const [link] = await db.select().from(Links).where(eq(Links.title, linkTitle));
-const { url } = link;
+const { url, userId } = link;
+
+let showDeleteButton = false;
+
+if (userId) {
+  const user = getUser({ cookies: Astro.cookies });
+  const userDb = db.select().from(Users).where(eq(Users.id, userId));
+  await Promise.all([user, userDb]).then(([user, [userDb]]) => {
+    showDeleteButton = user?.email === userDb.email;
+  });
+}
 ---
 
 <Layout title={linkTitle}>
@@ -29,7 +41,7 @@ const { url } = link;
   </Typography>
   <Action as="button" id="generate-qr-code"> Generate QR Code </Action>
   <Action id="copy-link-button" as="button"> Copy link </Action>
-  <Action data-link={linkTitle} id="delete-link-button" as="button">
+  <Action data-link={linkTitle} id="delete-link-button" as="button" hidden={!showDeleteButton}>
     Delete link
   </Action>
   <div class="mt-2" id="qr-code-area" class="hidden"></div>
