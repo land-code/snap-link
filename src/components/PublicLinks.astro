@@ -32,3 +32,12 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
     }
   </tbody>
 </table>
+
+<script>
+  import { io } from 'socket.io-client';
+  const socket = io(import.meta.env.PUBLIC_LIVE_RELOAD_URL);
+  socket.on('link', () => {
+    console.log('Link updated');
+    location.reload();
+  });
+</script>

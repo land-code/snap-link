@@ -3,6 +3,7 @@
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
+  readonly PUBLIC_LIVE_RELOAD_URL: string;
   readonly PUBLIC_FIREBASE_PROJECT_ID: string;
   readonly PUBLIC_API_KEY: string;
   readonly PUBLIC_AUTH_DOMAIN: string;
