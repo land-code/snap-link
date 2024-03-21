@@ -1,6 +1,10 @@
 {
-  "compilerOptions": {
+"compilerOptions": {
+    "outDir": "dist",
     "baseUrl": ".",
-    "outDir": "dist"
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
   },
+  "include": ["./src/**/*"]
 }
