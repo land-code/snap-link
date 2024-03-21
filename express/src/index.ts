@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
   </html>
 `);
 });
-app.get('/webhook', (req, res) => {
+app.post('/webhook', (req, res) => {
   io.emit('chat message', 'A user has connected');
   res.send('Links updated');
   console.log(req)
