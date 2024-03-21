@@ -50,6 +50,7 @@ app.get('/', (req, res) => {
 app.get('/webhook', (req, res) => {
   io.emit('chat message', 'A user has connected');
   res.send('Links updated');
+  console.log(req)
 })
 
 io.on('connection', (socket) => {
