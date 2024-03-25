@@ -119,6 +119,16 @@ const isAuthenticated = await checkAuth({ cookies: Astro.cookies });
       tdLink.appendChild(a);
       tr.appendChild(tdLink);
 
+      const tdInspect = document.createElement('td');
+      const inspectLink = document.createElement('a');
+      inspectLink.href = `/links/${title}`;
+      inspectLink.textContent = 'Inspect';
+      inspectLink.classList.add(
+        'bg-teal-600 p-2 rounded-xl border-2 border-teal-400 text-teal-50 hover:bg-teal-500 active:bg-teal-400 disabled:bg-teal-400'
+      );
+      tdInspect.appendChild(inspectLink);
+      tr.appendChild(tdInspect);
+
       publicLinks.appendChild(tr);
     }
 
