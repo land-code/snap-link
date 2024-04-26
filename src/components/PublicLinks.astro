@@ -17,7 +17,7 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
           <td class="text-center truncate max-w-16" transition:name={`title-${title}`}>
             {title}
           </td>
-          <td class="text-center truncate max-w-24">
+          <td class="text-center truncate max-w-[300px]">
             <a class="underline" href={url} transition:name={`link-${title}`}>
               {url}
             </a>
