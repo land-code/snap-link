@@ -14,10 +14,10 @@ const publicLinks = await db.select().from(Links).where(eq(Links.public, true));
     {
       publicLinks.map(({ title, url }) => (
         <tr class="h-12">
-          <td class="text-center truncate max-w-full" transition:name={`title-${title}`}>
+          <td class="text-center truncate max-w-22" transition:name={`title-${title}`}>
             {title}
           </td>
-          <td class="text-center truncate max-w-full">
+          <td class="text-center truncate max-w-16">
             <a class="underline" href={url} transition:name={`link-${title}`}>
               {url}
             </a>
